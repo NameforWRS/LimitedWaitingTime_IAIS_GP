@@ -153,6 +153,7 @@
     <ClCompile Include="SBIAIS.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BBIAIS.h" />
     <ClInclude Include="GBLWT.h" />
     <ClInclude Include="GlobalHead.h" />
     <ClInclude Include="IDG.h" />

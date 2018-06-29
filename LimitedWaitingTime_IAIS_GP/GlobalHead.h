@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _GLOBALHEAD_H //如果没有定义这个宏 
+#define _GLOBALHEAD_H //定义这个宏
 
 #include<stdio.h>
 #include<fstream>
@@ -14,4 +16,9 @@
 #include<map>
 #include <cstdlib>
 #include <limits.h>
+#include <random>
 using namespace std;
+
+
+
+#endif

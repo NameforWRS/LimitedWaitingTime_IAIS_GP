@@ -1,16 +1,10 @@
 #include"IDG.h"
-
-double random()
-{
-	return (double)rand() / RAND_MAX;
-}
-int random(int p)
-{
-	return (int)(random()*(p) + 0.5);
-}
 int uniform(int l, int u)
 {
-	return (int)random(u-l) + l;
+	auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	std::default_random_engine generator(seed);
+	std::uniform_int_distribution<int> uniDist(l, u);
+	return uniDist(generator);
 }
 
 void IDG_1(vector<int> &n,vector<vector<int>>& p1,vector<vector<int>>& p2,vector<vector<int>>& s1, vector<vector<int>>& r, vector<int> &W, vector<int> &B,long seed)

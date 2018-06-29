@@ -27,18 +27,18 @@ double SBIAIS(int n,vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 	env.start_time = startTime;
 	/////////////////////////////////////////////////////////////////////////////
 	Generation TotalGen;	
-	Process(env, TotalGen);//运行一代
+	Process_SB(env, TotalGen);//运行一代
 	endTime = clock();
 	while ((double)(endTime - startTime) / CLOCKS_PER_SEC < env.time_limit
 		&& count(TotalGen.Bestobj.begin(), TotalGen.Bestobj.end(), TotalGen.Bestobj[TotalGen.Bestobj.size() - 1]) < 2000)
 	{
-		Process(env, TotalGen);
+		Process_SB(env, TotalGen);
 		endTime = clock();
 	}	
 	return  *std::min_element(std::begin(TotalGen.Bestobj), std::end(TotalGen.Bestobj));
 }
 
-void Process(ENV& env, Generation& TotalGen)
+void Process_SB(ENV& env, Generation& TotalGen)
 {
 	/*////////////////////////////////
 	Step 1 Generate a poplution of A antibodies
@@ -130,7 +130,7 @@ void Process(ENV& env, Generation& TotalGen)
 	Step 5 Isotype Switching
 	//Recombination IgM之后的个体通过Isotype Switching，直到获得比之前个体pop1更好的种群pop
 	*/////////////////////////////////	
-	Isotype_Switching(pop1, env);
+	Isotype_Switching_SB(pop1, env);
 	Population pop = pop1;
 	/*////////////////////////////////
 	Step 6 Store the best antibody and makespan
@@ -139,7 +139,7 @@ void Process(ENV& env, Generation& TotalGen)
 	TotalGen.Bestobj.push_back(pop.bestbody.obj);
 }
 
-void Isotype_Switching(Population& pop1, ENV& env)
+void Isotype_Switching_SB(Population& pop1, ENV& env)
 {
 	//找出初始种群的最佳个体
 	vector<double> objofpop1_Somatic;
@@ -163,15 +163,15 @@ void Isotype_Switching(Population& pop1, ENV& env)
 				int random = rand() % 3 + 1;
 				if (random == 1)
 				{
-					IgA(pop1.pop[i],env);
+					IgA_SB(pop1.pop[i],env);
 				}
 				if (random == 2)
 				{
-					IgE(pop1.pop[i], env);
+					IgE_SB(pop1.pop[i], env);
 				}
 				if (random == 3)
 				{
-					IgG(pop1.pop[i], env);
+					IgG_SB(pop1.pop[i], env);
 				}
 			}
 			objofpop1_Somatic.push_back(pop1.pop[i].GetSumCompletofSB(pop1.pop[i].jobid, env));
@@ -179,19 +179,19 @@ void Isotype_Switching(Population& pop1, ENV& env)
 	}
 	return;
 }
-void IgA(Antibody& body,ENV& env)
+void IgA_SB(Antibody& body,ENV& env)
 {
 	int i = rand() % env.n;
 	int j = rand() % env.n;
 	body.jobid.erase(body.jobid.begin()+ std::distance(std::begin(body.jobid),find(body.jobid.begin(), body.jobid.end(), i)));
 	body.jobid.insert(body.jobid.begin()+j, i);
 }
-void IgE(Antibody& body, ENV& env)
+void IgE_SB(Antibody& body, ENV& env)
 {
-	IgG(body,env);
-	IgA(body, env);
+	IgG_SB(body,env);
+	IgA_SB(body, env);
 }
-void IgG(Antibody& body, ENV& env)
+void IgG_SB(Antibody& body, ENV& env)
 {
 	int i = rand() % env.n;
 	int j = rand() % env.n;
@@ -200,10 +200,10 @@ void IgG(Antibody& body, ENV& env)
 
 //为保证map容器可以使用自定义的Batch变量，重新构建运载符<，
 //说明详见： https://blog.csdn.net/q_l_s/article/details/52575924
-bool operator <(const Batch &batch1, const Batch &batch2)
-{
-	return true;
-}
+//bool operator <(const Batch &batch1, const Batch &batch2)
+//{
+//	return true;
+//}
 //为直接使用map容器的性质，直接定义对比法则，在构建map的同时，直接对组批的releasetime进行排序
 /*
 如map形式为
@@ -344,12 +344,12 @@ double Antibody::GetSumCompletofSB(vector<int>& job, ENV& env)
 	return Obj;
 }
 
-int Buffer::getSPTnum(Buffer& Current,ENV& env)
-{
-	vector<int> p2;
-	for (int i = 0; i < Current.jobid.size(); i++)
-	{
-		p2.push_back(env.p2[Current.jobid[i]]);
-	}
-	return Current.jobid[std::distance(std::begin(p2), std::min_element(std::begin(p2), std::end(p2)))];
-}
+//int Buffer::getSPTnum(Buffer& Current,ENV& env)
+//{
+//	vector<int> p2;
+//	for (int i = 0; i < Current.jobid.size(); i++)
+//	{
+//		p2.push_back(env.p2[Current.jobid[i]]);
+//	}
+//	return Current.jobid[std::distance(std::begin(p2), std::min_element(std::begin(p2), std::end(p2)))];
+//}

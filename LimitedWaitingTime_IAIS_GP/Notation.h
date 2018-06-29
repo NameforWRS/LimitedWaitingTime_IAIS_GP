@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MY_H_FILE //如果没有定义这个宏 
-#define MY_H_FILE //定义这个宏
+#ifndef _NOTATION_H //如果没有定义这个宏 
+#define _NOTATION_H //定义这个宏
 #include"GlobalHead.h"
 
 //定义生产环境
@@ -18,6 +18,8 @@ public:
 	int A;
 	int D;
 	int C;
+	int F;
+	int G;
 	clock_t start_time;
 	clock_t end_time;
 	int time_limit;
@@ -32,6 +34,7 @@ public:
 	double obj;
 	//antibody的目标值
 	double GetSumCompletofSB(vector<int>& jobid,ENV& env);
+	double GetSumCompletofBB(vector<int>& jobid, ENV& env);
 };
 //定义种群
 class Population

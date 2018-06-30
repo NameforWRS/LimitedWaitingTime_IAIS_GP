@@ -259,13 +259,39 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 		AdjustedBeforeBatch.push_back(batchtemp);
 	}
 	//Convert the infeasible solution into feasible solution
-
+	//According to the schedueled order, we split the solution of batch into a sequence of jobs
+	vector<int> Sequence_Before_Batch;
 	for (int i = 0; i < AdjustedBeforeBatch.size(); i++)
 	{
-		while (AdjustedBeforeBatch[i].capacity > env.B)
+		for (int j = 0; j < AdjustedBeforeBatch[i].jobid.size(); j++)
 		{
-
+			Sequence_Before_Batch.push_back(AdjustedBeforeBatch[i].jobid[j]);
+		}	
+	}
+	//vector<Batch> FormedBatch;
+	while (Sequence_Before_Batch.size() > 0)
+	{
+		Batch CurrentBatch;//重新生成一批
+		vector<int> record_earse;//记录unscheduledjobs被组批后的位置
+		for (int i = 0; i < Sequence_Before_Batch.size(); i++)//这里循环次数有点多，后期需调整
+		{
+			if (CurrentBatch.capacity == env.B)
+			{
+				break;
+			}
+			if (CurrentBatch.capacity + 1 < env.B&&CurrentBatch.sumofsecprocess + env.p2[Sequence_Before_Batch[i]] <= env.W)//如果容量约束,等待约束以及随机约束均满足的话
+			{
+				CurrentBatch.jobid.push_back(Sequence_Before_Batch[i]);//将满足的job加入新批中
+				CurrentBatch.sumofsecprocess += env.p2[Sequence_Before_Batch[i]];
+				CurrentBatch.capacity++;
+				record_earse.push_back(Sequence_Before_Batch[i]);//记录job位置
+			}
 		}
+		for (int i = 0; i < record_earse.size(); i++)
+		{
+			Sequence_Before_Batch.erase(Sequence_Before_Batch.begin() + std::distance(std::begin(Sequence_Before_Batch), find(Sequence_Before_Batch.begin(), Sequence_Before_Batch.end(), record_earse[i])));//去除unscheduledjob已组批的job
+		}
+		AdjustedBatch.push_back(CurrentBatch);//所有组好的批全部进入FormedBatch中
 	}
 	/*////////////////////////////////////////////////
 	Step 3 Calculate the sum of job completion time

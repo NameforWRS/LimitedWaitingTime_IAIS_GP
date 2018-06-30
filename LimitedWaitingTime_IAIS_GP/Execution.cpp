@@ -1,5 +1,6 @@
 #include"IDG.h"
 #include"BBIAIS.h"
+#include"SBIAIS.h"
 #include"Notation.h"
 #include"GBLWT.h"
 
@@ -29,6 +30,8 @@ int main()
 			{
 				cout << GBLWT(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch]) << endl;
 				cout << BBIAIS(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch], A, N, R, F, G, timelimit) << endl;
+				cout << SBIAIS(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch], A, N, R, timelimit) << endl;
+				cout << endl;
 			}	
 		}		
 	}

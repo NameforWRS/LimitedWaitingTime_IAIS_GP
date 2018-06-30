@@ -42,7 +42,7 @@ double BBIAIS(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int>
 	return  *std::min_element(std::begin(TotalGen.Bestobj), std::end(TotalGen.Bestobj));
 }
 
-void Process(ENV& env, Generation& TotalGen)
+void Process_BB(ENV& env, Generation& TotalGen)
 {
 	/*////////////////////////////////
 	Step 1 Generate a poplution of A antibodies
@@ -88,7 +88,7 @@ void Process(ENV& env, Generation& TotalGen)
 	for (int i = 0; i < pop1.pop.size(); i++)
 	{
 		vector<int> newjob;
-		InvertSBtoBB(pop1.pop[i].jobid, env, newjob);
+		InvertSBtoBB(pop1.pop[i].jobid, env);
 		objofpop1.push_back(pop1.pop[i].GetSumCompletofBB(newjob, env));
 	}
 	pop1.bestbody = pop1.pop[std::distance(std::begin(objofpop1), std::min_element(std::begin(objofpop1), std::end(objofpop1)))];
@@ -360,10 +360,10 @@ int Buffer::getSPTnum(Buffer& Current, ENV& env)
 	return Current.jobid[std::distance(std::begin(p2), std::min_element(std::begin(p2), std::end(p2)))];
 }
 
-void InvertSBtoBB(vector<int>& job, ENV& env,vector<int>& newjob)
+void InvertSBtoBB(vector<int>& job, ENV& env)
 {
 	//Encoding process
-	newjob = job;
+	
 	//Initialization
 	vector<Batch> FormedBatch;
 
@@ -436,7 +436,7 @@ void InvertSBtoBB(vector<int>& job, ENV& env,vector<int>& newjob)
 	{
 		for (int j = 0; j < AdjustedBatch[i].jobid.size(); j++)
 		{
-			newjob[AdjustedBatch[i].jobid[j]] = i;
+			job[AdjustedBatch[i].jobid[j]] = i;
 		}
 	}
 }

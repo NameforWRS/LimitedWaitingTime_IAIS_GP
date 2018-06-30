@@ -19,13 +19,17 @@ int main()
 	int F = 10;
 	int G = 50;
 	int seed = 1234567889;
+	int timelimit = 10;
 	IDG_1(n, p1, p2, s1,r, W, B, seed);
 	for (int i = 0; i < n.size(); i++)
 	{
 		for (int batch = 0; batch < B.size(); batch++)
 		{
-			//cout << GBLWT(n[i], p1[i], p2[i], s1[i], r[i], W[i], B[batch]) << endl;
-			cout << BBIAIS(n[i], p1[i], p2[i], s1[i],r[i], W[i], B[batch], A, N, R,F,G,10)<<endl;			
+			for (int w = 0; w < W.size(); w++)
+			{
+				cout << GBLWT(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch]) << endl;
+				cout << BBIAIS(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch], A, N, R, F, G, timelimit) << endl;
+			}	
 		}		
 	}
 	return 0;

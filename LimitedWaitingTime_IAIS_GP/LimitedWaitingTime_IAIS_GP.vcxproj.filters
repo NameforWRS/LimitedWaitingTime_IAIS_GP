@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BBIAIS.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="IDG.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -28,6 +25,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="GBLWT.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test_0630.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,5 +11,6 @@ void Process_BB(ENV& env, Generation& TotalGen);
 void IgG_BB(Antibody& body, ENV& env);
 void IgE_BB(Antibody& body, ENV& env);
 bool operator <(const Batch &batch1, const Batch &batch2);
+void InvertSBtoBB(vector<int>& job, ENV& env);
 
 #endif

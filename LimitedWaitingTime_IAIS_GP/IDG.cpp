@@ -1,7 +1,8 @@
 #include"IDG.h"
 int uniform(int l, int u)
 {
-	auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	//auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	auto seed = 123456;
 	std::default_random_engine generator(seed);
 	std::uniform_int_distribution<int> uniDist(l, u);
 	return uniDist(generator);
@@ -9,12 +10,10 @@ int uniform(int l, int u)
 
 void IDG_1(vector<int> &n,vector<vector<int>>& p1,vector<vector<int>>& p2,vector<vector<int>>& s1, vector<vector<int>>& r, vector<int> &W, vector<int> &B,long seed)
 {
-	srand(seed);
 	n.push_back(10);
 	n.push_back(20);
 	n.push_back(50);
 
-	srand(seed);
 	W.push_back(40);
 	B.push_back(5);
 	B.push_back(10);

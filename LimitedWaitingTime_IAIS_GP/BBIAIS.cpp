@@ -8,7 +8,7 @@ R: The number of repeated times during IgM
 */
 
 
-double BBIAIS(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> r, int W, int B, int A, int D, int C,int F,int G, int timelimit)
+double BBIAIS(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> r, int W, int B, int A, int D, int C, int F, int G, int timelimit)
 {
 	clock_t startTime, endTime;
 	startTime = clock();
@@ -33,6 +33,7 @@ double BBIAIS(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int>
 	Generation TotalGen;
 	Process_BB(env, TotalGen);//运行一代
 	endTime = clock();
+	int i = 0;
 	while ((double)(endTime - startTime) / CLOCKS_PER_SEC < env.time_limit
 		&& count(TotalGen.Bestobj.begin(), TotalGen.Bestobj.end(), TotalGen.Bestobj[TotalGen.Bestobj.size() - 1]) < 2000)
 	{
@@ -61,7 +62,8 @@ void Process_BB(ENV& env, Generation& TotalGen)
 			}
 			pop1.pop.push_back(body);//将0数列输入抗体个体中
 									 //将抗体数列进行转换，生成不同个体
-			unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+									 //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+			unsigned seed = 12345;
 			std::shuffle(pop1.pop[cycle].jobid.begin(), pop1.pop[cycle].jobid.end(), std::default_random_engine(seed));
 		}
 	}
@@ -76,7 +78,8 @@ void Process_BB(ENV& env, Generation& TotalGen)
 			}
 			pop1.pop.push_back(body);//将0数列输入抗体个体中
 									 //将抗体数列进行转换，生成不同个体
-			unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+									 //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+			unsigned seed = 12345;
 			std::shuffle(pop1.pop[cycle].jobid.begin(), pop1.pop[cycle].jobid.end(), std::default_random_engine(seed));
 		}
 		pop1.pop.push_back(TotalGen.Bestbody[TotalGen.Bestbody.size() - 1]);
@@ -85,11 +88,22 @@ void Process_BB(ENV& env, Generation& TotalGen)
 	Step 2 Calculate makespan of each antibody
 	*/////////////////////////////////
 	vector<double> objofpop1;
-	for (int i = 0; i < pop1.pop.size(); i++)
+
+	for (int i = 0; i < pop1.pop.size() - 1; i++)
 	{
 		//vector<int> newjob;
 		InvertSBtoBB(pop1.pop[i].jobid, env);
 		objofpop1.push_back(pop1.pop[i].GetSumCompletofBB(pop1.pop[i].jobid, env));
+	}
+	if (TotalGen.Bestbody.size() == 0)
+	{
+		InvertSBtoBB(pop1.pop[pop1.pop.size() - 1].jobid, env);
+		objofpop1.push_back(pop1.pop[pop1.pop.size() - 1].GetSumCompletofBB(pop1.pop[pop1.pop.size() - 1].jobid, env));
+	}
+	else
+	{
+		//it is no neccessary to invert the SB to BB
+		objofpop1.push_back(pop1.pop[pop1.pop.size() - 1].GetSumCompletofBB(pop1.pop[pop1.pop.size() - 1].jobid, env));
 	}
 	pop1.bestbody = pop1.pop[std::distance(std::begin(objofpop1), std::min_element(std::begin(objofpop1), std::end(objofpop1)))];
 	pop1.bestbody.obj = *std::min_element(std::begin(objofpop1), std::end(objofpop1));
@@ -103,6 +117,7 @@ void Process_BB(ENV& env, Generation& TotalGen)
 		SelectedPosition.push_back(i);
 	}
 	random_shuffle(SelectedPosition.begin(), SelectedPosition.end());//随机生成1-N的元素，选取前D个
+																	 /////////////////here
 	for (int i = 0; i < pop1.pop.size(); i++)
 	{
 		for (int j = 0; j < env.D; j++)
@@ -136,7 +151,7 @@ void Process_BB(ENV& env, Generation& TotalGen)
 	Step 5 Isotype Switching
 	//Recombination IgM之后的个体通过Isotype Switching，直到获得比之前个体pop1更好的种群pop
 	*/////////////////////////////////	
-	Isotype_Switching_BB(pop1, env);
+	//Isotype_Switching_BB(pop1, env);
 
 	Population pop = pop1;
 	/*////////////////////////////////
@@ -166,7 +181,7 @@ void Isotype_Switching_BB(Population& pop1, ENV& env)
 		{
 			for (int j = 0; j < env.C; j++)
 			{
-				srand(time(0));
+				srand(12345);
 				int random = rand() % 3 + 1;
 				if (random == 1)
 				{
@@ -188,7 +203,7 @@ void Isotype_Switching_BB(Population& pop1, ENV& env)
 }
 void IgE_BB(Antibody& body, ENV& env)
 {
-	int index = uniform(0,env.n-1);
+	int index = uniform(0, env.n - 1);
 	if (uniform(1, 100) < env.G)
 	{
 		body.jobid[index]++;
@@ -254,7 +269,7 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 				batchtemp.jobid.push_back(j);
 				batchtemp.capacity++;
 				batchtemp.sumofsecprocess += env.p2[j];
-			}				
+			}
 		}
 		AdjustedBeforeBatch.push_back(batchtemp);
 	}
@@ -266,7 +281,7 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 		for (int j = 0; j < AdjustedBeforeBatch[i].jobid.size(); j++)
 		{
 			Sequence_Before_Batch.push_back(AdjustedBeforeBatch[i].jobid[j]);
-		}	
+		}
 	}
 	//vector<Batch> FormedBatch;
 	while (Sequence_Before_Batch.size() > 0)
@@ -363,7 +378,7 @@ int Buffer::getSPTnum(Buffer& Current, ENV& env)
 void InvertSBtoBB(vector<int>& job, ENV& env)
 {
 	//Encoding process
-	
+
 	//Initialization
 	vector<Batch> FormedBatch;
 

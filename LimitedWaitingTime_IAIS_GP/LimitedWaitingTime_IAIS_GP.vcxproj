@@ -148,17 +148,27 @@
   <ItemGroup>
     <ClCompile Include="BBIAIS.cpp" />
     <ClCompile Include="Execution.cpp" />
+    <ClCompile Include="ExpressionMgr.cpp" />
     <ClCompile Include="GBLWT.cpp" />
+    <ClCompile Include="GP_GBLWT.cpp" />
     <ClCompile Include="IDG.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Procedures.cpp" />
     <ClCompile Include="SBIAIS.cpp" />
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BBIAIS.h" />
+    <ClInclude Include="ExpressionMgr.h" />
     <ClInclude Include="GBLWT.h" />
     <ClInclude Include="GlobalHead.h" />
     <ClInclude Include="IDG.h" />
     <ClInclude Include="Notation.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Procedures.h" />
     <ClInclude Include="SBIAIS.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

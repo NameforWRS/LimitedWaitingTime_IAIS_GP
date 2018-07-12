@@ -17,6 +17,18 @@
 #include <cstdlib>
 #include <limits.h>
 #include <random>
+
+
+#include "stdafx.h"
+//#include<Windows.h>  
+#include<iostream>
+#include "stdafx.h"
+#include <string>
+#include "ExpressionMgr.h"
+#include "Procedures.h"
+#include "Object.h"
+#include <sstream> 
+//#include <vld.h>
 using namespace std;
 
 

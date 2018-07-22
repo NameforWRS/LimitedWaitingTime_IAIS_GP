@@ -17,7 +17,7 @@ BATCH1 1
 BATCH4 4
 BATCH2 2
 */
-struct CmpByIncr{
+struct CmpByIncr {
 	bool operator()(const int k1, const int k2) const
 	{
 		return k1 < k2;
@@ -75,7 +75,7 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 			{
 				break;
 			}
-			if (CurrentBatch.capacity + 1 < B&&CurrentBatch.sumofsecprocess+ p2[unsheduledjobs[i]] - std::max(p2[unsheduledjobs[i]],CurrentBatch.maxsecprocess) <= W)//如果容量约束和等待约束均满足的话
+			if (CurrentBatch.capacity + 1 <= B&&CurrentBatch.sumofsecprocess + p2[unsheduledjobs[i]] - std::max(p2[unsheduledjobs[i]], CurrentBatch.maxsecprocess) <= W)//如果容量约束和等待约束均满足的话
 			{
 				CurrentBatch.jobid.push_back(unsheduledjobs[i]);//将满足的job加入新批中
 				CurrentBatch.sumofsecprocess += p2[unsheduledjobs[i]];
@@ -130,6 +130,7 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 	{
 		if (SimulatedTime >= std::max(TimeofStep1, CmpofBatch1[finishedbatch - 1]) && spaceofbuffer == 0)//when Step 1 is finished and buffer is empty, namely the batch is released
 		{
+			SimulatedTime = std::max(TimeofStep1, CmpofBatch1[finishedbatch - 1]);
 			for (int i = 0; i < AdjustedBatch1[currentbatch].jobid.size(); i++)
 			{
 				buffer1.jobid.push_back(AdjustedBatch1[currentbatch].jobid[i]);
@@ -145,7 +146,7 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 		{
 			while (buffer1.jobid.size() > 0)
 			{
-				int goin = buffer1.getSPTnum(buffer1, env);
+				int goin = buffer1.getSPTnumsimple(buffer1, env);
 				buffer1.jobid.erase(buffer1.jobid.begin() + std::distance(std::begin(buffer1.jobid), find(buffer1.jobid.begin(), buffer1.jobid.end(), goin)));//去除buffer中已加工的job																															 //在离散机器加工
 				vector<int> tmpcmp;
 				tmpcmp.push_back(goin);
@@ -165,11 +166,11 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 			break;
 		}
 	}
-	int OBJ1= Obj1;
+	int OBJ1 = Obj1;
 	////////////////////////////////////////////
 	///NEW STAGE!!!!!WARNIINGS!!!!
 	///////////////////////////////////////////
-	
+
 	multimap<Batch, int, CmpByPjtj> Sequence_Batch2;//用multimap构建自动对releasetime进行排序的sequence
 	for (int i = 0; i < FormedBatch.size(); i++)
 	{
@@ -199,6 +200,7 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 	{
 		if (SimulatedTime >= std::max(TimeofStep1, CmpofBatch2[finishedbatch - 1]) && spaceofbuffer == 0)//when Step 1 is finished and buffer is empty, namely the batch is released
 		{
+			SimulatedTime = std::max(TimeofStep1, CmpofBatch1[finishedbatch - 1]);
 			for (int i = 0; i < AdjustedBatch2[currentbatch].jobid.size(); i++)
 			{
 				buffer2.jobid.push_back(AdjustedBatch2[currentbatch].jobid[i]);
@@ -214,9 +216,9 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 		{
 			while (buffer2.jobid.size() > 0)
 			{
-				int goin = buffer2.getSPTnum(buffer2, env);
+				int goin = buffer2.getSPTnumsimple(buffer2, env);
 				buffer2.jobid.erase(buffer2.jobid.begin() + std::distance(std::begin(buffer2.jobid), find(buffer2.jobid.begin(), buffer2.jobid.end(), goin)));//去除buffer中已加工的job
-																																						 //在离散机器加工
+																																							  //在离散机器加工
 				vector<int> tmpcmp;
 				tmpcmp.push_back(goin);
 				SimulatedTime += p2[goin];
@@ -236,5 +238,6 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 		}
 	}
 	int OBJ2 = Obj2;
-	return std::max(OBJ1, OBJ2);
+	return std::min(OBJ1, OBJ2);
+	//return OBJ1;
 }

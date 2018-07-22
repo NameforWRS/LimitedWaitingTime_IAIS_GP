@@ -57,7 +57,7 @@ void Process_SB(ENV& env, Generation& TotalGen)
 			}
 			pop1.pop.push_back(body);//将0123...n-1数列输入抗体个体中
 			//将抗体数列进行转换，生成不同个体
-			unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+			unsigned seed = 19960809;
 			std::shuffle(pop1.pop[cycle].jobid.begin(), pop1.pop[cycle].jobid.end(), std::default_random_engine(seed));
 		}
 	}
@@ -72,7 +72,7 @@ void Process_SB(ENV& env, Generation& TotalGen)
 			}
 			pop1.pop.push_back(body);//将0123...n-1数列输入抗体个体中
 			 //将抗体数列进行转换，生成不同个体
-			unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+			unsigned seed = 19960809;
 			std::shuffle(pop1.pop[cycle].jobid.begin(), pop1.pop[cycle].jobid.end(), std::default_random_engine(seed));
 		}
 		pop1.pop.push_back(TotalGen.Bestbody[TotalGen.Bestbody.size() - 1]);
@@ -305,6 +305,7 @@ double Antibody::GetSumCompletofSB(vector<int>& job, ENV& env)
 	{
 		if (SimulatedTime >= std::max(TimeofStep1,CmpofBatch[finishedbatch-1])&&spaceofbuffer == 0)//when Step 1 is finished and buffer is empty, namely the batch is released
 		{
+			SimulatedTime = std::max(TimeofStep1, CmpofBatch[finishedbatch - 1]);
 			for (int i = 0; i < AdjustedBatch[currentbatch].jobid.size(); i++)
 			{
 				buffer.jobid.push_back(AdjustedBatch[currentbatch].jobid[i]);
@@ -320,7 +321,7 @@ double Antibody::GetSumCompletofSB(vector<int>& job, ENV& env)
 		{
 			while (buffer.jobid.size() > 0)
 			{
-				int goin = buffer.getSPTnum(buffer,env);	
+				int goin = buffer.getSPTnumsimple(buffer,env);	
 				buffer.jobid.erase(buffer.jobid.begin() + std::distance(std::begin(buffer.jobid), find(buffer.jobid.begin(), buffer.jobid.end(), goin)));//去除buffer中已加工的job
 				//在离散机器加工
 				vector<int> tmpcmp;

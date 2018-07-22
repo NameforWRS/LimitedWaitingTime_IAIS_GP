@@ -1,5 +1,6 @@
 #include"BBIAIS.h"
 
+
 /*
 Parameter Setting
 A: The number of poplation in each generation
@@ -34,9 +35,11 @@ double BBIAIS(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int>
 	Process_BB(env, TotalGen);//运行一代
 	endTime = clock();
 	int i = 0;
+	
 	while ((double)(endTime - startTime) / CLOCKS_PER_SEC < env.time_limit
 		&& count(TotalGen.Bestobj.begin(), TotalGen.Bestobj.end(), TotalGen.Bestobj[TotalGen.Bestobj.size() - 1]) < 2000)
 	{
+		i++;
 		Process_BB(env, TotalGen);
 		endTime = clock();
 	}
@@ -124,15 +127,19 @@ void Process_BB(ENV& env, Generation& TotalGen)
 		{
 			int Selectedid = pop1.bestbody.jobid[SelectedPosition[j]];//最好抗体相应位置的job代码
 																	  //把抗体对应位置的元素和最佳抗体所找到的元素对调一下
-			swap
-			(
-				pop1.pop[i].jobid[SelectedPosition[j]],
-				pop1.pop[i].jobid[
-					std::distance(std::begin(pop1.pop[i].jobid),
-						find(pop1.pop[i].jobid.begin(), pop1.pop[i].jobid.end(), Selectedid)
-					)
-				]
-			);
+			if (find(pop1.pop[i].jobid.begin(), pop1.pop[i].jobid.end(), Selectedid) != pop1.pop[i].jobid.end())
+			{
+				swap
+				(
+					pop1.pop[i].jobid[SelectedPosition[j]],
+					pop1.pop[i].jobid[
+						std::distance(std::begin(pop1.pop[i].jobid),
+							find(pop1.pop[i].jobid.begin(), pop1.pop[i].jobid.end(), Selectedid)
+						)
+					]
+				);
+			}
+			
 		}
 	}
 	/*////////////////////////////////
@@ -287,6 +294,10 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 	while (Sequence_Before_Batch.size() > 0)
 	{
 		Batch CurrentBatch;//重新生成一批
+		CurrentBatch.maxsecprocess = 0;
+		CurrentBatch.capacity = 0;
+		CurrentBatch.sumofsecprocess = 0;
+		CurrentBatch.timeofbatchprocess = 0;
 		vector<int> record_earse;//记录unscheduledjobs被组批后的位置
 		for (int i = 0; i < Sequence_Before_Batch.size(); i++)//这里循环次数有点多，后期需调整
 		{
@@ -298,6 +309,9 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 			{
 				CurrentBatch.jobid.push_back(Sequence_Before_Batch[i]);//将满足的job加入新批中
 				CurrentBatch.sumofsecprocess += env.p2[Sequence_Before_Batch[i]];
+				CurrentBatch.maxsecprocess = std::max(env.p2[Sequence_Before_Batch[i]], CurrentBatch.maxsecprocess);
+				CurrentBatch.timeofbatchprocess = std::max(env.p1[Sequence_Before_Batch[i]], CurrentBatch.timeofbatchprocess);//PTB
+				CurrentBatch.sumofbatchsec = CurrentBatch.sumofsecprocess + CurrentBatch.timeofbatchprocess;
 				CurrentBatch.capacity++;
 				record_earse.push_back(Sequence_Before_Batch[i]);//记录job位置
 			}
@@ -326,6 +340,7 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 	{
 		if (SimulatedTime >= std::max(TimeofStep1, CmpofBatch[finishedbatch - 1]) && spaceofbuffer == 0)//when Step 1 is finished and buffer is empty, namely the batch is released
 		{
+			SimulatedTime = std::max(TimeofStep1, CmpofBatch[finishedbatch - 1]);
 			for (int i = 0; i < AdjustedBatch[currentbatch].jobid.size(); i++)
 			{
 				buffer.jobid.push_back(AdjustedBatch[currentbatch].jobid[i]);
@@ -341,7 +356,7 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 		{
 			while (buffer.jobid.size() > 0)
 			{
-				int goin = buffer.getSPTnum(buffer, env);
+				int goin = buffer.getSPTnumsimple(buffer, env);
 				buffer.jobid.erase(buffer.jobid.begin() + std::distance(std::begin(buffer.jobid), find(buffer.jobid.begin(), buffer.jobid.end(), goin)));//去除buffer中已加工的job
 																																						 //在离散机器加工
 				vector<int> tmpcmp;
@@ -365,15 +380,6 @@ double Antibody::GetSumCompletofBB(vector<int>& job, ENV& env)
 	return Obj;
 }
 
-int Buffer::getSPTnum(Buffer& Current, ENV& env)
-{
-	vector<int> p2;
-	for (int i = 0; i < Current.jobid.size(); i++)
-	{
-		p2.push_back(env.p2[Current.jobid[i]]);
-	}
-	return Current.jobid[std::distance(std::begin(p2), std::min_element(std::begin(p2), std::end(p2)))];
-}
 
 void InvertSBtoBB(vector<int>& job, ENV& env)
 {
@@ -416,7 +422,10 @@ void InvertSBtoBB(vector<int>& job, ENV& env)
 		{
 			unsheduledjobs.erase(unsheduledjobs.begin() + std::distance(std::begin(unsheduledjobs), find(unsheduledjobs.begin(), unsheduledjobs.end(), record_earse[i])));//去除unscheduledjob已组批的job
 		}
-		FormedBatch.push_back(CurrentBatch);//所有组好的批全部进入FormedBatch中
+		if (CurrentBatch.jobid.size() != 0)
+		{
+			FormedBatch.push_back(CurrentBatch);//所有组好的批全部进入FormedBatch中
+		}
 	}
 
 	/*////////////////////////////////////////////////
